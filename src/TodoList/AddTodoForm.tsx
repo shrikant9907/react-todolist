@@ -15,11 +15,12 @@ const TextFieldStyled = styled(TextField)({
 
 interface AddTodoFormPropTypes {
   value: string,
+  buttonLabel: string,
   handleOnChange: Function,
   handleOnSubmit: Function
 }
 
-const AddTodoForm = ({ handleOnChange, handleOnSubmit, value }: AddTodoFormPropTypes) => {
+const AddTodoForm = ({ handleOnChange, handleOnSubmit, value, buttonLabel }: AddTodoFormPropTypes) => {
 
   return (
     <div>
@@ -35,12 +36,17 @@ const AddTodoForm = ({ handleOnChange, handleOnSubmit, value }: AddTodoFormPropT
           onChange={(e) => handleOnChange(e)}
           value={value}
         />
-        <FormHelperText>
-          Add your todo task in the above field and click on add button.
+        <FormHelperText sx={{ mb: "20px" }}>
+          {buttonLabel} your todo task in the above field.
         </FormHelperText>
 
-        <Button type={"submit"} disabled={value.length === 0} variant="contained" color="primary">
-          Add
+        <Button
+          fullWidth
+          type={"submit"}
+          disabled={value.length === 0}
+          variant="contained"
+          color="primary">
+          {buttonLabel}
         </Button>
       </TodoForm>
     </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import AddTodoForm from './AddTodoForm'
 import { Container, Typography, styled } from '@mui/material'
-import TodoTaskList from './List'
+import TodoTaskList from './TodoTaskList'
+import TodoListFilter from './TodoListFilter'
 
 const TodoListContainer = styled(Container)({
   width: "100%",
@@ -24,6 +25,8 @@ export interface TodoPropType {
 const TodoList = () => {
 
   const [text, setText] = useState("");
+  const [filterTab, setFilterTab] = useState("Todo");
+  const [editTask, setEditTask] = useState<TodoPropType | null>(null);
   const [todoList, setTodoList] = useState<TodoPropType[]>([]);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -42,8 +45,15 @@ const TodoList = () => {
       status: "todo"
     }
 
-    const newTodoList = [...todoList, newTodoItem];
-    saveTodoList(newTodoList)
+    if (!editTask) {
+      const newTodoList = [...todoList, newTodoItem];
+      saveTodoList(newTodoList)
+    } else {
+      const taskIndex = todoList.findIndex((item) => item.id === editTask.id)
+      let updatedTodoList = [...todoList];
+      updatedTodoList[taskIndex] = { ...editTask, text: text }
+      saveTodoList(updatedTodoList)
+    }
 
   }
 
@@ -55,6 +65,7 @@ const TodoList = () => {
 
   const resetForm = () => {
     setText("");
+    setEditTask(null);
   }
 
   const fetchTodoList = async () => {
@@ -72,13 +83,39 @@ const TodoList = () => {
 
   const handleOnDelete = (id: number) => {
     const updateTodoList = todoList.filter((item) => item.id !== id);
-    console.log('updateTodoList', updateTodoList, id)
     saveTodoList(updateTodoList);
   }
 
   const handleOnEdit = (id: number) => {
-    setText("");
+    const foundTask = todoList.find((item) => item.id === id);
+    if (foundTask) {
+      setEditTask(foundTask);
+      setText(foundTask.text)
+    }
   }
+
+  const handleOnTabChange = (tab: string) => {
+    setFilterTab(tab)
+  }
+
+  const handleOnCheckClick = (item: TodoPropType) => {
+    const taskIndex = todoList.findIndex((obj) => obj.id === item.id)
+    if (taskIndex > -1) {
+      const newStatus = item.status === "todo" ? "completed" : "todo";
+      let updatedTodoList = [...todoList];
+      updatedTodoList[taskIndex] = { ...updatedTodoList[taskIndex], status: newStatus }
+      saveTodoList(updatedTodoList)
+    }
+  }
+
+  const getFilteredTodoList = (list: any, tab: string) => {
+    if (tab.toLowerCase() !== 'all') {
+      return todoList.filter((item) => item.status === tab.toLowerCase());
+    }
+    return list;
+  }
+
+  const filteredTodoList = getFilteredTodoList(todoList, filterTab);
 
   return (
     <TodoListContainer>
@@ -87,9 +124,15 @@ const TodoList = () => {
         handleOnChange={handleOnChange}
         handleOnSubmit={handleOnSubmit}
         value={text}
+        buttonLabel={editTask ? "Update" : "Add"}
+      />
+      <TodoListFilter
+        onTabChange={handleOnTabChange}
+        value={filterTab}
       />
       <TodoTaskList
-        todoList={todoList}
+        onCheckClick={handleOnCheckClick}
+        todoList={filteredTodoList}
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}
       />

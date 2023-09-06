@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Avatar, IconButton, Box, List, ListItem, ListItemAvatar, ListItemText, styled, Tooltip, Typography } from '@mui/material';
+import { Alert, Avatar, IconButton, Box, List, ListItem, ListItemAvatar, ListItemText, styled, Tooltip, Typography, Badge } from '@mui/material';
 import { Check, DeleteOutline, EditOutlined } from '@mui/icons-material';
 import { TodoPropType } from '.';
 
@@ -25,7 +25,7 @@ const Avatar24 = styled(Avatar)({
 })
 
 const TodoListSubHeading = styled(Typography)({
-  fontSize: "30px",
+  fontSize: "20px",
   marginBottom: "10px"
 })
 
@@ -43,27 +43,37 @@ const DeleteButton = styled(EditButton)({
 })
 
 const Checked = styled(Check)({
-  color: "#00ff00"
+  color: "#00cc00",
+  background: "#fff",
+  borderRadius: "100%",
 })
 
 interface TodoListPropType {
   todoList: TodoPropType[],
   onDelete: Function,
   onEdit: Function,
+  onCheckClick: Function,
 }
 
-const TodoTaskList = ({ todoList, onDelete, onEdit }: TodoListPropType) => {
+const TodoTaskList = ({ todoList, onDelete, onEdit, onCheckClick }: TodoListPropType) => {
 
   return (
     <>
-      <TodoListSubHeading variant='h2'>List</TodoListSubHeading>
+      <TodoListSubHeading variant='h2'>
+        <Badge
+          badgeContent={todoList.length}
+          color="primary"
+        >
+          List
+        </Badge>
+      </TodoListSubHeading>
 
       <TaskList>
         {todoList.length > 0 ? todoList.map((item: any) => {
           return <ListItemStyled key={`list_item${item?.id}`}
             secondaryAction={
               <Box>
-                <EditButton onClick={() => onDelete(item.id)} edge="end" aria-label="edit">
+                <EditButton onClick={() => onEdit(item.id)} edge="end" aria-label="edit">
                   <Tooltip placement="top" title={"Edit Task"}>
                     <EditOutlined />
                   </Tooltip>
@@ -77,9 +87,9 @@ const TodoTaskList = ({ todoList, onDelete, onEdit }: TodoListPropType) => {
             }
           >
             <ListItemAvatar>
-              <Tooltip placement="top" title={item.done ? "Mark as Todo" : "Mark as completed."}>
-                <Avatar24>
-                  {item.done ? <Checked /> : <Check />}
+              <Tooltip placement="top" title={item.status === "completed" ? "Mark as Todo" : "Mark as completed"}>
+                <Avatar24 onClick={() => onCheckClick(item)}>
+                  {item.status === "completed" ? <Checked /> : <Check />}
                 </Avatar24>
               </Tooltip>
             </ListItemAvatar>

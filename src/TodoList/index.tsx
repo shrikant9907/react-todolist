@@ -3,6 +3,7 @@ import AddTodoForm from './AddTodoForm'
 import { Container, Typography, styled } from '@mui/material'
 import TodoTaskList from './TodoTaskList'
 import TodoListFilter from './TodoListFilter'
+import SearchTodoTask from './SearchTodoTask'
 
 const TodoListContainer = styled(Container)({
   width: "100%",
@@ -25,9 +26,10 @@ export interface TodoPropType {
 const TodoList = () => {
 
   const [text, setText] = useState("");
-  const [filterTab, setFilterTab] = useState("Todo");
   const [editTask, setEditTask] = useState<TodoPropType | null>(null);
   const [todoList, setTodoList] = useState<TodoPropType[]>([]);
+  const [filterTab, setFilterTab] = useState("Todo");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { value } = e.target;
@@ -109,10 +111,20 @@ const TodoList = () => {
   }
 
   const getFilteredTodoList = (list: any, tab: string) => {
+
+    if (searchKeyword.length > 0) {
+      return todoList.filter((item) => item.text.includes(searchKeyword));
+    }
+
     if (tab.toLowerCase() !== 'all') {
       return todoList.filter((item) => item.status === tab.toLowerCase());
     }
+
     return list;
+  }
+
+  const handleOnSearch = (keyword: string) => {
+    setSearchKeyword(keyword)
   }
 
   const filteredTodoList = getFilteredTodoList(todoList, filterTab);
@@ -125,6 +137,10 @@ const TodoList = () => {
         handleOnSubmit={handleOnSubmit}
         value={text}
         buttonLabel={editTask ? "Update" : "Add"}
+      />
+      <SearchTodoTask
+        value={searchKeyword}
+        onSearch={handleOnSearch}
       />
       <TodoListFilter
         onTabChange={handleOnTabChange}

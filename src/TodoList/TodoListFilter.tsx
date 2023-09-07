@@ -1,5 +1,5 @@
-import { Button, styled, Box } from '@mui/material'
 import React from 'react'
+import { Button, styled, Box } from '@mui/material'
 
 const Tabs = styled(Box)({
   display: "flex",
@@ -11,11 +11,11 @@ const Tab = styled(Button)({
   borderRadius: "8px",
 })
 
-
 const todoListOptions = [
   "All",
   "Todo",
   "Completed",
+  "Deleted",
 ]
 
 interface TodoListFilterPropType {

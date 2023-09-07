@@ -1,26 +1,35 @@
 import React, { useState, useEffect } from 'react'
 import AddTodoForm from './AddTodoForm'
-import { Container, Typography, styled } from '@mui/material'
+import { Alert, AlertProps, Container, Snackbar, Typography, styled, Box, MenuList, Paper, MenuItem, Button, Tooltip } from '@mui/material'
 import TodoTaskList from './TodoTaskList'
 import TodoListFilter from './TodoListFilter'
 import SearchTodoTask from './SearchTodoTask'
+import ResetConfirmationDialog from './ResetConfirmationDialog'
 
 const TodoListContainer = styled(Container)({
   width: "100%",
   maxWidth: "900px",
 })
 
+const TodoHeader = styled(Box)({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
+})
+
 const TodoListHeading = styled(Typography)({
-  fontSize: "30px",
+  fontSize: "20px",
   padding: "30px 0",
   textAlign: "center",
-  fontWeight: 700
+  fontWeight: 500
 })
 
 export interface TodoPropType {
   id: number,
   text: string,
-  status: string
+  status: string,
+  created: string | number,
 }
 
 const TodoList = () => {
@@ -30,6 +39,13 @@ const TodoList = () => {
   const [todoList, setTodoList] = useState<TodoPropType[]>([]);
   const [filterTab, setFilterTab] = useState("Todo");
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [alertData, setAlertData] = useState({
+    type: "success",
+    message: "New task added."
+  });
+  const [openResetDialog, setOpenResetDialog] = useState(false);
+
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { value } = e.target;
@@ -40,23 +56,31 @@ const TodoList = () => {
     e.preventDefault();
 
     const todoItemId = todoList && todoList.length > 0 ? todoList[todoList.length - 1].id + 1 : 1
-
+    const timestamp = new Date().getTime();
     const newTodoItem = {
       id: todoItemId,
       text: text,
-      status: "todo"
+      status: "todo",
+      created: timestamp,
     }
 
     if (!editTask) {
       const newTodoList = [...todoList, newTodoItem];
       saveTodoList(newTodoList)
+      setAlertData({
+        ...alertData, message: "New task added."
+      })
     } else {
       const taskIndex = todoList.findIndex((item) => item.id === editTask.id)
       let updatedTodoList = [...todoList];
       updatedTodoList[taskIndex] = { ...editTask, text: text }
       saveTodoList(updatedTodoList)
+      setAlertData({
+        ...alertData, message: "Task updated."
+      })
     }
 
+    setOpenSnackBar(true);
   }
 
   const saveTodoList = (todoList: TodoPropType[]) => {
@@ -84,8 +108,18 @@ const TodoList = () => {
   }, [])
 
   const handleOnDelete = (id: number) => {
-    const updateTodoList = todoList.filter((item) => item.id !== id);
-    saveTodoList(updateTodoList);
+    const taskIndex = todoList.findIndex((obj) => obj.id === id)
+    if (taskIndex > -1) {
+      const newStatus = "deleted";
+      let updatedTodoList = [...todoList];
+      updatedTodoList[taskIndex] = { ...updatedTodoList[taskIndex], status: newStatus }
+      saveTodoList(updatedTodoList)
+    }
+
+    setOpenSnackBar(true);
+    setAlertData({
+      ...alertData, message: "Task deleted."
+    })
   }
 
   const handleOnEdit = (id: number) => {
@@ -127,30 +161,73 @@ const TodoList = () => {
     setSearchKeyword(keyword)
   }
 
+  const handleOnSnackbarClose = () => {
+    setOpenSnackBar(!openSnackBar)
+  }
+
+  const resetTodoList = () => {
+    localStorage.removeItem('todoList');
+    resetForm();
+    setOpenSnackBar(true);
+    setAlertData({
+      ...alertData, message: "All tasks has been removed permanently."
+    })
+    fetchTodoList()
+    setOpenResetDialog(false);
+  }
+
   const filteredTodoList = getFilteredTodoList(todoList, filterTab);
 
   return (
     <TodoListContainer>
-      <TodoListHeading variant='h1'>Todo List</TodoListHeading>
+      <TodoHeader>
+        <TodoListHeading variant='h1'>Todo List </TodoListHeading>
+        {todoList.length > 0 &&
+          <Tooltip arrow title="It will remove all tasks permanently" placement="left">
+            <Button onClick={() => setOpenResetDialog(true)} variant="outlined" color="error">
+              Reset
+            </Button>
+          </Tooltip>
+        }
+      </TodoHeader>
       <AddTodoForm
         handleOnChange={handleOnChange}
         handleOnSubmit={handleOnSubmit}
         value={text}
         buttonLabel={editTask ? "Update" : "Add"}
       />
-      <SearchTodoTask
-        value={searchKeyword}
-        onSearch={handleOnSearch}
-      />
-      <TodoListFilter
-        onTabChange={handleOnTabChange}
-        value={filterTab}
-      />
+      {todoList.length > 0 &&
+        <SearchTodoTask
+          value={searchKeyword}
+          onSearch={handleOnSearch}
+        />
+        &&
+        <TodoListFilter
+          onTabChange={handleOnTabChange}
+          value={filterTab}
+        />
+      }
       <TodoTaskList
         onCheckClick={handleOnCheckClick}
         todoList={filteredTodoList}
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}
+      />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={openSnackBar}
+        autoHideDuration={1000}
+        onClose={handleOnSnackbarClose}
+      >
+        <Alert onClose={handleOnSnackbarClose} severity={alertData?.type as AlertProps["severity"]}>
+          {alertData.message}
+        </Alert>
+      </Snackbar>
+
+      <ResetConfirmationDialog
+        open={openResetDialog}
+        onClose={() => setOpenResetDialog(false)}
+        onConfirm={resetTodoList}
       />
     </TodoListContainer>
   )

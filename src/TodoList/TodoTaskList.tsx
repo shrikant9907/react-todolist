@@ -5,7 +5,9 @@ import { TodoPropType } from '.';
 
 const TaskList = styled(List)({
   width: "100%",
-  bgcolor: 'background.paper'
+  bgcolor: 'background.paper',
+  maxHeight: "400px",
+  overflow: 'auto',
 })
 
 const ListItemStyled = styled(ListItem)({
@@ -66,6 +68,7 @@ const TodoTaskList = ({ todoList, onDelete, onEdit, onCheckClick }: TodoListProp
         >
           List
         </Badge>
+
       </TodoListSubHeading>
 
       <TaskList>
@@ -73,18 +76,23 @@ const TodoTaskList = ({ todoList, onDelete, onEdit, onCheckClick }: TodoListProp
           return <ListItemStyled key={`list_item${item?.id}`}
             secondaryAction={
               <Box>
-                <EditButton onClick={() => onEdit(item.id)} edge="end" aria-label="edit">
-                  <Tooltip placement="top" title={"Edit Task"}>
-                    <EditOutlined />
-                  </Tooltip>
-                </EditButton>
-                <DeleteButton onClick={() => onDelete(item.id)} edge="end" aria-label="delete">
-                  <Tooltip placement="top" title={"Delete Task"}>
-                    <DeleteOutline />
-                  </Tooltip>
-                </DeleteButton>
+                {item.status === 'todo' &&
+                  <EditButton onClick={() => onEdit(item.id)} edge="end" aria-label="edit">
+                    <Tooltip placement="top" title={"Edit Task"}>
+                      <EditOutlined />
+                    </Tooltip>
+                  </EditButton>
+                }
+                {item.status !== 'deleted' &&
+                  <DeleteButton onClick={() => onDelete(item.id)} edge="end" aria-label="delete">
+                    <Tooltip placement="top" title={"Delete Task"}>
+                      <DeleteOutline />
+                    </Tooltip>
+                  </DeleteButton>
+                }
               </Box>
             }
+            style={{ opacity: item.status === 'deleted' ? "0.4" : 1 }}
           >
             <ListItemAvatar>
               <Tooltip placement="top" title={item.status === "completed" ? "Mark as Todo" : "Mark as completed"}>

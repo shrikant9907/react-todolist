@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AddTodoForm from './AddTodoForm'
-import { Alert, AlertProps, Container, Snackbar, Typography, styled, Box, MenuList, Paper, MenuItem, Button, Tooltip, Divider } from '@mui/material'
+import { Alert, AlertProps, Container, Snackbar, Typography, styled, Box, Button, Tooltip, Divider } from '@mui/material'
 import TodoTaskList from './TodoTaskList'
 import TodoListFilter from './TodoListFilter'
 import SearchTodoTask from './SearchTodoTask'
@@ -27,14 +27,16 @@ const TodoListHeading = styled(Typography)({
 
 export interface TodoPropType {
   id: number,
-  text: string,
+  title: string,
+  description: string,
   status: string,
   created: string | number,
 }
 
 const TodoList = () => {
 
-  const [text, setText] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [editTask, setEditTask] = useState<TodoPropType | null>(null);
   const [todoList, setTodoList] = useState<TodoPropType[]>([]);
   const [filterTab, setFilterTab] = useState("Todo");
@@ -48,8 +50,12 @@ const TodoList = () => {
 
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { value } = e.target;
-    setText(value);
+    const { value, name } = e.target;
+    if (name == "title") {
+      setTitle(value ? value.trimStart() : "");
+    } else {
+      setDescription(value);
+    }
   }
 
   const handleOnSubmit = (e: React.FormEvent<HTMLDivElement>) => {
@@ -59,7 +65,8 @@ const TodoList = () => {
     const timestamp = new Date().getTime();
     const newTodoItem = {
       id: todoItemId,
-      text: text,
+      title: title?.trim(),
+      description,
       status: "todo",
       created: timestamp,
     }
@@ -73,7 +80,7 @@ const TodoList = () => {
     } else {
       const taskIndex = todoList.findIndex((item) => item.id === editTask.id)
       let updatedTodoList = [...todoList];
-      updatedTodoList[taskIndex] = { ...editTask, text: text }
+      updatedTodoList[taskIndex] = { ...editTask, title, description }
       saveTodoList(updatedTodoList)
       setAlertData({
         ...alertData, message: "Task updated."
@@ -90,7 +97,8 @@ const TodoList = () => {
   }
 
   const resetForm = () => {
-    setText("");
+    setTitle("");
+    setDescription("");
     setEditTask(null);
   }
 
@@ -126,7 +134,8 @@ const TodoList = () => {
     const foundTask = todoList.find((item) => item.id === id);
     if (foundTask) {
       setEditTask(foundTask);
-      setText(foundTask.text)
+      setTitle(foundTask.title)
+      setDescription(foundTask.description)
     }
   }
 
@@ -147,7 +156,7 @@ const TodoList = () => {
   const getFilteredTodoList = (list: any, tab: string) => {
 
     if (searchKeyword.length > 0) {
-      return todoList.filter((item) => item.text.includes(searchKeyword));
+      return todoList.filter((item) => item.title.includes(searchKeyword));
     }
 
     if (tab.toLowerCase() !== 'all') {
@@ -191,11 +200,12 @@ const TodoList = () => {
         }
       </TodoHeader>
       <Divider style={{ marginBottom: "15px" }} />
-       
+
       <AddTodoForm
         handleOnChange={handleOnChange}
         handleOnSubmit={handleOnSubmit}
-        value={text}
+        title={title}
+        description={description}
         buttonLabel={editTask ? "Update" : "Add"}
       />
       <Divider style={{ marginBottom: "15px" }} />

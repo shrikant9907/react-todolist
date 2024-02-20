@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Avatar, IconButton, Box, List, ListItem, ListItemAvatar, ListItemText, styled, Tooltip, Typography, Badge, Chip } from '@mui/material';
+import { Alert, Avatar, IconButton, Box, List, ListItem, ListItemAvatar, ListItemText, styled, Tooltip, Typography, Badge } from '@mui/material';
 import { Check, DeleteOutline, EditOutlined, Undo } from '@mui/icons-material';
 import { TodoPropType } from '.';
 
@@ -106,7 +106,8 @@ const TodoTaskList = ({ todoList, onDelete, onEdit, onCheckClick }: TodoListProp
               </Tooltip>
             </ListItemAvatar>
             <ListItemText primary={<Box>
-              <Typography mb="2px">{item?.status === 'todo' ? <small>{item?.text}</small> : <del>{item?.text}</del>}</Typography>
+              <Typography fontWeight={'bold'}>{item?.status === 'todo' ? <small>{item?.title}</small> : <del>{item?.title}</del>}</Typography>
+              <Typography>{item?.status === 'todo' ? <small>{item?.description}</small> : <del>{item?.description}</del>}</Typography>
             </Box>} />
           </ListItemStyled >
         }) :

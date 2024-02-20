@@ -1,13 +1,15 @@
 import React from 'react'
-import { Alert, Avatar, IconButton, Box, List, ListItem, ListItemAvatar, ListItemText, styled, Tooltip, Typography, Badge } from '@mui/material';
-import { Check, DeleteOutline, EditOutlined } from '@mui/icons-material';
+import { Alert, Avatar, IconButton, Box, List, ListItem, ListItemAvatar, ListItemText, styled, Tooltip, Typography, Badge, Chip } from '@mui/material';
+import { Check, DeleteOutline, EditOutlined, Undo } from '@mui/icons-material';
 import { TodoPropType } from '.';
 
 const TaskList = styled(List)({
-  width: "100%",
-  bgcolor: 'background.paper',
-  maxHeight: "400px",
+  width: "100%", 
+  maxHeight: "calc(100vh - 256px)",
   overflow: 'auto',
+  "*": {
+    fontSize: "12px"
+  }
 })
 
 const ListItemStyled = styled(ListItem)({
@@ -27,8 +29,8 @@ const Avatar24 = styled(Avatar)({
 })
 
 const TodoListSubHeading = styled(Typography)({
-  fontSize: "20px",
-  marginBottom: "10px"
+  fontSize: "16px",
+  marginBottom: "5px"
 })
 
 const EditButton = styled(IconButton)({
@@ -44,10 +46,12 @@ const DeleteButton = styled(EditButton)({
   color: '#ff0000'
 })
 
-const Checked = styled(Check)({
+const Checked = styled(Undo)({
   color: "#00cc00",
-  background: "#fff",
-  borderRadius: "100%",
+  background: "#ffffff",
+  border: "1px solid #fff",
+  borderRadius: "100%", 
+  fontSize: "14px !important"
 })
 
 interface TodoListPropType {
@@ -101,7 +105,9 @@ const TodoTaskList = ({ todoList, onDelete, onEdit, onCheckClick }: TodoListProp
                 </Avatar24>
               </Tooltip>
             </ListItemAvatar>
-            <ListItemText primary={item?.text} />
+            <ListItemText primary={<Box>
+              <Typography mb="2px">{item?.status === 'todo' ? <small>{item?.text}</small> : <del>{item?.text}</del>}</Typography>
+            </Box>} />
           </ListItemStyled >
         }) :
           <Alert variant="outlined" severity="info">

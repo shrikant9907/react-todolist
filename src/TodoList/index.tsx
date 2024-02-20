@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AddTodoForm from './AddTodoForm'
-import { Alert, AlertProps, Container, Snackbar, Typography, styled, Box, MenuList, Paper, MenuItem, Button, Tooltip } from '@mui/material'
+import { Alert, AlertProps, Container, Snackbar, Typography, styled, Box, MenuList, Paper, MenuItem, Button, Tooltip, Divider } from '@mui/material'
 import TodoTaskList from './TodoTaskList'
 import TodoListFilter from './TodoListFilter'
 import SearchTodoTask from './SearchTodoTask'
@@ -20,7 +20,7 @@ const TodoHeader = styled(Box)({
 
 const TodoListHeading = styled(Typography)({
   fontSize: "20px",
-  padding: "30px 0",
+  padding: "15px 0",
   textAlign: "center",
   fontWeight: 500
 })
@@ -184,18 +184,21 @@ const TodoList = () => {
         <TodoListHeading variant='h1'>Todo List </TodoListHeading>
         {todoList.length > 0 &&
           <Tooltip arrow title="It will remove all tasks permanently" placement="left">
-            <Button onClick={() => setOpenResetDialog(true)} variant="outlined" color="error">
+            <Button size='small' onClick={() => setOpenResetDialog(true)} variant="outlined" color="error">
               Reset
             </Button>
           </Tooltip>
         }
       </TodoHeader>
+      <Divider style={{ marginBottom: "15px" }} />
+       
       <AddTodoForm
         handleOnChange={handleOnChange}
         handleOnSubmit={handleOnSubmit}
         value={text}
         buttonLabel={editTask ? "Update" : "Add"}
       />
+      <Divider style={{ marginBottom: "15px" }} />
       {todoList.length > 0 &&
         <SearchTodoTask
           value={searchKeyword}

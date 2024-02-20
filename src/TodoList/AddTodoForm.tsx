@@ -1,16 +1,15 @@
 import React from 'react'
-import { Box, FormHelperText, TextField, styled, Button } from '@mui/material';
+import { Box, TextField, styled, Button, Stack } from '@mui/material';
 
 const TodoForm = styled(Box)({
-  borderRadius: "8px",
-  border: "2px solid #efefef",
-  padding: "20px 15px",
-  marginBottom: "30px",
+  marginBottom: "15px",
 })
 
 const TextFieldStyled = styled(TextField)({
-  borderRadius: "8px",
-  marginBottom: "5px",
+  borderRadius: "8px", 
+  "*" : {
+    fontSize: "14px",
+  }
 })
 
 interface AddTodoFormPropTypes {
@@ -23,33 +22,30 @@ interface AddTodoFormPropTypes {
 const AddTodoForm = ({ handleOnChange, handleOnSubmit, value, buttonLabel }: AddTodoFormPropTypes) => {
 
   return (
-    <div>
       <TodoForm
         component={'form'}
         onSubmit={(e) => handleOnSubmit(e)}
       >
-        <TextFieldStyled
+       <Stack gap={"10px"} direction={"row"}>
+       <TextFieldStyled
           fullWidth
           required
-          placeholder='Add text here...'
+          size="small"
+          placeholder='Add your task here.'
           id="add-todo-required"
           onChange={(e) => handleOnChange(e)}
           value={value}
         />
-        <FormHelperText sx={{ mb: "20px" }}>
-          {buttonLabel} your todo task in the above field.
-        </FormHelperText>
-
         <Button
-          fullWidth
           type={"submit"}
           disabled={value.length === 0}
           variant="contained"
+          style={{textTransform: 'unset'}}
           color="primary">
           {buttonLabel}
         </Button>
+       </Stack>
       </TodoForm>
-    </div>
   )
 }
 

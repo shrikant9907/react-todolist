@@ -4,7 +4,7 @@ import { Button, styled, Box } from '@mui/material'
 const Tabs = styled(Box)({
   display: "flex",
   gap: "10px",
-  marginBottom: "30px",
+  marginBottom: "15px",
 })
 
 const Tab = styled(Button)({

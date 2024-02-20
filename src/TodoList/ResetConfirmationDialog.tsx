@@ -32,8 +32,8 @@ const ResetConfirmationDialog = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ mb: "10px", mr: "15px" }}>
-        <Button variant='outlined' onClick={onClose}>No</Button>
-        <Button variant='outlined' color={"success"} onClick={onConfirm}>Yes</Button>
+        <Button size="small" variant='outlined' onClick={onClose}>No</Button>
+        <Button size="small" variant='outlined' color={"success"} onClick={onConfirm}>Yes</Button>
       </DialogActions>
     </Dialog>
   );

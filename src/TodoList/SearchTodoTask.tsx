@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, TextField, styled } from '@mui/material';
 
 const TodoForm = styled(Box)({
-  marginBottom: "20px",
+  marginBottom: "15px",
 })
 
 const TextFieldStyled = styled(TextField)({
